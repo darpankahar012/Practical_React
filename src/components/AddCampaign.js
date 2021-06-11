@@ -35,7 +35,8 @@ export class AddCampaign extends Component {
     addCampaign = async () => {
         let data = {
             "product": this.state.selectProduct,
-            "lead_type": parseInt(this.state.selectLeadType),
+            // "lead_type": parseInt(this.state.selectLeadType),
+            "lead_type": this.state.selectLeadType,
             "quality_type": this.state.selectQualityType,
             "base_price": this.state.base_price,
             "bid_price": this.state.bid_price,

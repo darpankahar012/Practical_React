@@ -9,10 +9,9 @@ import {
 import { bindActionCreators } from "redux";
 import { ActCreators } from "../redux/bindActionCreator";
 import { connect } from "react-redux";
-import {
-    errorToaster,
-    successToaster,
-} from "./common";
+import { errorToaster, successToaster, } from "./common";
+// import instance from "./axios";
+
 
 import "../App.css";
 
@@ -40,6 +39,23 @@ class Login extends React.Component {
         });
     }
 
+    // With Axios But getting Error so used Fetch method
+    // onLogin = async () => {
+    //     const response = await instance.post("/login", {
+    //         headers: {
+    //             Authkey: "Lopiuy4vQ74#1jGNr",
+    //             "Content-Type": "application/json",
+    //         },
+    //     }).catch((error) => {
+    //         // let errorMessage = error.response.data.error.message;
+    //         // errorToaster(errorMessage);
+    //     });
+    //     if (response && response.data) {
+    //         let userData = response.data;
+    //         this.props.LOGIN_USER_DETAIL(userData);
+    //     }
+    // }
+
     onLogin = async () => {
         this.setState({
             loader: true,
@@ -55,8 +71,7 @@ class Login extends React.Component {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(loginUserData),
-        })
-            .then((response) => response.text())
+        }).then((response) => response.text())
             .then((responseText) => {
                 responseText = JSON.parse(responseText);
                 if (responseText.error) {
