@@ -126,6 +126,10 @@ export class dashBoard extends Component {
             openGetBashPriceModal: false
         })
     }
+    redirecToLogin = () => {
+        const { history } = this.props;
+        history.push("/");
+    }
 
     render() {
         const { loader, listData, openAddCampaignModal, openGetBashPriceModal, LeadandQuality } = this.state

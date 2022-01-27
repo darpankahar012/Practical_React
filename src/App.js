@@ -1,5 +1,6 @@
 import React, { Component, lazy, Suspense } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
+// import { BrowserRouter as Router } from 'react-router-dom';
 import {
   HashRouter as Router,
   Route,
@@ -9,6 +10,7 @@ import './App.css';
 import { suspenseFallbackLoader } from './components/Loader'
 
 const Login = lazy(() => import("./components/Login"));
+const Signup = lazy(() => import("./components/Signup"));
 const Dashboard = lazy(() => import("./components/dashBoard"));
 const AddCampaign = lazy(() => import("./components/AddCampaign"));
 const GetBashPrice = lazy(() => import("./components/GetBashPrice"));
@@ -22,6 +24,7 @@ export class App extends Component {
           <Suspense fallback={load}>
             <Switch>
               <Route exact path="/" render={(props) => <Login {...props} />} />
+              <Route exact path="/signup" render={(props) => <Signup {...props} />} />
               <Route exact path="/dashboard" render={(props) => <Dashboard {...props} />} />
               <Route exact path="/add-campaign" render={(props) => <AddCampaign {...props} />} />
               <Route exact path="/get-bash-price" render={(props) => <GetBashPrice {...props} />} />

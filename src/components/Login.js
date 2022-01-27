@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
     Button,
@@ -6,37 +6,34 @@ import {
     Form,
     Input,
 } from "reactstrap";
-import { bindActionCreators } from "redux";
-import { ActCreators } from "../redux/bindActionCreator";
-import { connect } from "react-redux";
-import { errorToaster, successToaster, } from "./common";
-// import instance from "./axios";
+import { AuthenticationService } from "../services";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    errorToaster,
+    successToaster,
+} from "./common";
 
 
 import "../App.css";
 
+function Login(props) {
 
-const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators(ActCreators, dispatch);
-};
+    const dispatch = useDispatch();
 
-class Login extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loader: false,
-            Email: "",
-            Password: "",
-            fcm_registration_token: "",
-            isSafari: false,
-            fcm_flag: true,
-        };
+    const [loader, setLoader] = useState(false);
+    const [data, setData] = useState({
+        Email: "",
+        Password: "",
+    });
+
+    const handleChange = (e) => {
+        setData({ ...data, [e.target.name]: e.target.value });
     }
 
-    handleChange(e) {
-        this.setState({
-            [e.target.name]: e.target.value,
-        });
+
+    const signUp = () => {
+        const { history } = props;
+        history.push("/signup");
     }
 
     // With Axios But getting Error so used Fetch method
@@ -56,92 +53,102 @@ class Login extends React.Component {
     //     }
     // }
 
-    onLogin = async () => {
-        this.setState({
-            loader: true,
-        });
-        let loginUserData = {
-            username: this.state.Email,
-            password: this.state.Password,
-        };
-        fetch("http://staging.webmynehost.com/consumercoverage/api/login", {
-            method: "POST",
-            headers: {
-                Authkey: "Lopiuy4vQ74#1jGNr",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(loginUserData),
-        }).then((response) => response.text())
-            .then((responseText) => {
-                responseText = JSON.parse(responseText);
-                if (responseText.error) {
-                    this.setState({
-                        loader: false,
-                    });
-                    errorToaster("Invalid login credentials.");
-                } else {
-                    this.setState({
-                        loader: false,
-                    });
-                    successToaster("Login Successfully");
-                    let userData = responseText.responsedata;
-                    this.props.LOGIN_USER_DETAIL(userData.userdata);
-                    this.props.TOKEN_KEY(userData.session);
-                    const { history } = this.props;
-                    history.push("/dashboard");
-                }
-            })
-            .catch((err) => { });
+    const onLogin = () => {
+        errorToaster("Please Enter Email.");
+        if (data.Email === "") {
+            errorToaster("Please Enter Email.");
+        } else if (data.Password === "") {
+            errorToaster("Please Enter Password.");
+        } else {
+            let req = { "username": data.Email, "password": data.Password }
+            dispatch(AuthenticationService.Login(req))
+        }
+        // this.setState({
+        //     loader: true,
+        // });
+        // let loginUserData = {
+        //     username: this.state.Email,
+        //     password: this.state.Password,
+        // };
+        // fetch("http://staging.webmynehost.com/consumercoverage/api/login", {
+        //     method: "POST",
+        //     headers: {
+        //         Authkey: "Lopiuy4vQ74#1jGNr",
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(loginUserData),
+        // }).then((response) => response.text())
+        //     .then((responseText) => {
+        //         responseText = JSON.parse(responseText);
+        //         if (responseText.error) {
+        //             this.setState({
+        //                 loader: false,
+        //             });
+        //             errorToaster("Invalid login credentials.");
+        //         } else {
+        //             this.setState({
+        //                 loader: false,
+        //             });
+        //             successToaster("Login Successfully");
+        //             let userData = responseText.responsedata;
+        //             this.props.LOGIN_USER_DETAIL(userData.userdata);
+        //             this.props.TOKEN_KEY(userData.session);
+        //             const { history } = this.props;
+        //             history.push("/dashboard");
+        //         }
+        //     })
+        //     .catch((err) => { });
     };
 
+    return (
+        <Form className="login-form">
+            <h2 className="text-center">Welcome</h2>
+            <FormGroup className="mb-3">
+                <Input
+                    name="Email"
+                    value={data.Email}
+                    placeholder={"Email"}
+                    type="email"
+                    autoComplete="new-email"
+                    onChange={(e) =>
+                        handleChange(e)
+                    }
+                />
+            </FormGroup>
+            <FormGroup>
+                <Input
+                    name="Password"
+                    placeholder={"Password"}
+                    type="password"
+                    autoComplete="new-password"
+                    value={data.Password}
+                    onChange={(e) =>
+                        handleChange(e)
+                    }
+                />
+            </FormGroup>
+            <div className="text-center">
+                <Button
+                    className="btn-lg btn-green btn-block mt-3 mb-3 "
+                    type="button"
+                    // disabled={!data.Email || !data.Password ? true : false}
+                    onClick={() => onLogin()}
+                >
+                    {loader && <i class="fas fa-spinner fa-pulse"></i>}
+                    {loader ? `Login...` : `Login`}
+                </Button>
+            </div>
+            <div className="text-center">
+                <Button
+                    className="btn-lg btn-dark btn-block mt-3 "
+                    type="button"
+                    onClick={() => signUp()}>
+                    SignUp Form
+                </Button>
+            </div>
+        </Form>
+    );
 
-    render() {
-        const { Email, Password } = this.state;
-        return (
-            <Form className="login-form">
-                <h1>
-                    <span className="font-weight-bold">Practical Task</span>
-                </h1>
-                <h2 className="text-center">Welcome</h2>
-                <FormGroup className="mb-3">
-                    <Input
-                        name="Email"
-                        value={this.state.Email}
-                        placeholder={"Email"}
-                        type="email"
-                        autoComplete="new-email"
-                        onChange={(e) =>
-                            this.handleChange(e)
-                        }
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Input
-                        name="Password"
-                        placeholder={"Password"}
-                        type="password"
-                        autoComplete="new-password"
-                        value={
-                            this.state.Password
-                        }
-                        onChange={(e) =>
-                            this.handleChange(e)
-                        }
-                    />
-                </FormGroup>
-                <div className="text-center">
-                    <Button
-                        className="btn-lg btn-dark btn-block mt-3 "
-                        type="button"
-                        disabled={!Email || !Password ? true : false}
-                        onClick={() => this.onLogin()}>
-                        {this.state.loader && <i class="fas fa-spinner fa-pulse"></i>}
-                        {this.state.loader ? `Login...` : `Login`}
-                    </Button>
-                </div>
-            </Form>
-        );
-    }
 }
 
-export default connect(null, mapDispatchToProps)(Login);
+export default Login;
